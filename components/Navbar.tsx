@@ -3,25 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Search, Menu, X, Bell, User } from 'lucide-react'
-
-export const COLORS = {
-  primary: '#F79B72',     // Orange
-  secondary: '#2A4759',   // Navy
-  accent: '#DDDDDD',      // Grey
-  background: '#EEEEEE',  // Retro
-  text: '#000000',        // Tailwind's gray-900
-} as const;
-
-export const FONT_SIZES = {
-  heading: '2rem',
-  subheading: '1.5rem',
-  body: '1rem',
-  small: '0.875rem',
-} as const;
-
-export const FONT_FAMILY = {
-  default: "'Inter', sans-serif",
-} as const;
+import { COLORS, FONT_FAMILY, FONT_SIZES } from '@/lib/constants'
 
 interface NavbarProps {
   onSidebarToggle: () => void;
@@ -58,7 +40,7 @@ export default function Navbar({ onSidebarToggle }: NavbarProps) {
         fontFamily: FONT_FAMILY.default
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Sidebar Toggle Button + Logo */}
           <div className="flex items-center space-x-3">
@@ -70,7 +52,8 @@ export default function Navbar({ onSidebarToggle }: NavbarProps) {
             >
               ▷
             </button>
-
+          </div>
+          <div>
             {/* Logo */}
             <Link href="/" className="flex items-center transition-transform duration-200 hover:scale-105">
               <span
@@ -83,7 +66,7 @@ export default function Navbar({ onSidebarToggle }: NavbarProps) {
           </div>
 
           {/* Enhanced Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-10">
             {['Community', 'Store'].map((item) => (
               <Link
                 key={item}

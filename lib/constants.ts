@@ -4,6 +4,10 @@ export const COLORS = {
   accent: '#DDDDDD',      // Grey
   background: '#EEEEEE',  // Retro
   text: '#000000',        // Tailwind's gray-900
+
+  success: '#10B981',
+  warning: '#F59E0B',
+  danger: '#EF4444'
 };
 
 export const FONT_SIZES = {
