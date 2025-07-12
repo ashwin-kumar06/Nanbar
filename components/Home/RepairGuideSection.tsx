@@ -412,29 +412,6 @@ export default function RepairGuideSection() {
             />
           ))}
         </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <div 
-            className="bg-white rounded-2xl p-8 max-w-2xl mx-auto shadow-lg"
-          >
-            <h3 className="text-2xl font-bold mb-4" style={{ color: COLORS.text }}>
-              Can't Find What You're Looking For?
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Get personalized repair guidance for your specific problem
-            </p>
-            <button
-              className="px-8 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-              style={{
-                backgroundColor: COLORS.primary,
-                color: 'white'
-              }}
-            >
-              Ask Our AI Assistant
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   );

@@ -52,7 +52,7 @@ const services: Service[] = [
   },
   {
     id: 'carpentry',
-    title: 'Carpentry & Woodwork',
+    title: 'Carpentry',
     description: 'Repair furniture, fix doors, and handle all your woodworking needs.',
     icon: Hammer,
     count: 29,

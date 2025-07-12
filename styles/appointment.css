@@ -1,0 +1,426 @@
+/* app/appointment/appointment.css */
+.appointment-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #EEEEEE;
+  min-height: 100vh;
+}
+
+.appointment-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.appointment-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2A4759;
+  margin-bottom: 1rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.appointment-subtitle {
+  font-size: 1.125rem;
+  color: #6B7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.progress-step.active {
+  opacity: 1;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #DDDDDD;
+  color: #2A4759;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .step-number {
+  background-color: #F79B72;
+  color: white;
+}
+
+.progress-step span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #2A4759;
+}
+
+/* Form Styles */
+.appointment-form {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.form-step {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2A4759;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 500;
+  color: #2A4759;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #DDDDDD;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #F79B72;
+  box-shadow: 0 0 0 3px rgba(247, 155, 114, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Urgency Buttons */
+.urgency-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.urgency-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid;
+  border-radius: 8px;
+  background: transparent;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.urgency-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Service Type Buttons */
+.service-type-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.service-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  border: 2px solid #DDDDDD;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.service-type-btn:hover {
+  border-color: #F79B72;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.service-type-btn.active {
+  border-color: #F79B72;
+  background-color: rgba(247, 155, 114, 0.1);
+}
+
+.service-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.service-type-btn span:nth-child(2) {
+  font-weight: 600;
+  color: #2A4759;
+  margin-bottom: 0.25rem;
+}
+
+.service-desc {
+  font-size: 0.875rem;
+  color: #6B7280;
+}
+
+/* Service Grid */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  border: 2px solid #DDDDDD;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.service-card:hover {
+  border-color: #F79B72;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.service-card.active {
+  border-color: #F79B72;
+  background-color: rgba(247, 155, 114, 0.1);
+}
+
+.service-card-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.service-card-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #2A4759;
+}
+
+/* Address List */
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.address-card {
+  padding: 1.5rem;
+  border: 2px solid #DDDDDD;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.address-card:hover {
+  border-color: #F79B72;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.address-card.active {
+  border-color: #F79B72;
+  background-color: rgba(247, 155, 114, 0.1);
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.address-name {
+  font-weight: 600;
+  color: #2A4759;
+}
+
+.default-badge {
+  background-color: #F79B72;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.address-details p {
+  margin: 0.25rem 0;
+  color: #6B7280;
+}
+
+.address-phone {
+  font-weight: 500;
+  color: #2A4759;
+}
+
+/* Payment Info */
+.payment-info {
+  margin-top: 2rem;
+}
+
+.info-card {
+  background: rgba(247, 155, 114, 0.1);
+  border: 1px solid rgba(247, 155, 114, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.info-card h3 {
+  color: #2A4759;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.info-card p {
+  margin: 0.5rem 0;
+  color: #6B7280;
+  font-size: 0.875rem;
+}
+
+/* Navigation */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #DDDDDD;
+}
+
+.nav-btn {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.nav-btn.primary {
+  background-color: #F79B72;
+  color: white;
+}
+
+.nav-btn.primary:hover:not(:disabled) {
+  background-color: #E6854F;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(247, 155, 114, 0.3);
+}
+
+.nav-btn.secondary {
+  background-color: #DDDDDD;
+  color: #2A4759;
+}
+
+.nav-btn.secondary:hover {
+  background-color: #C4C4C4;
+  transform: translateY(-2px);
+}
+
+.nav-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .appointment-container {
+    padding: 1rem;
+  }
+  
+  .appointment-form {
+    padding: 1.5rem;
+  }
+  
+  .appointment-title {
+    font-size: 2rem;
+  }
+  
+  .progress-indicator {
+    gap: 1rem;
+  }
+  
+  .service-type-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  .service-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .urgency-buttons {
+    flex-direction: column;
+  }
+  
+  .form-navigation {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

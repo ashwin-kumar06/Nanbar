@@ -4,6 +4,7 @@ import HeroSection from '@/components/Home/HeroSection';
 import VideoCarousel from '@/components/Home/VideoCarousel';
 import ServicesSection from '@/components/Home/ServicesSection';
 import RepairGuideSection from '@/components/Home/RepairGuideSection';
+import FloatingChatbot from '@/components/Home/FloatingChatbot';
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <VideoCarousel />
       <ServicesSection />
       <RepairGuideSection />
+      <FloatingChatbot />
     </div>
   );
 }
