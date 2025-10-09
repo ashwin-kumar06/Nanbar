@@ -177,46 +177,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           ))}
         </div>
-
-        {/* Footer */}
-        <div 
-          className="border-t p-6"
-          style={{ borderColor: COLORS.accent }}
-        >
-          <div className="flex items-center space-x-3 mb-4">
-            <div 
-              className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: `${COLORS.primary}20` }}
-            >
-              <User className="h-5 w-5" style={{ color: COLORS.primary }} />
-            </div>
-            <div>
-              <p 
-                className="font-medium"
-                style={{ color: COLORS.text, fontSize: FONT_SIZES.body }}
-              >
-                Welcome back!
-              </p>
-              <p 
-                className="opacity-60"
-                style={{ color: COLORS.text, fontSize: FONT_SIZES.small }}
-              >
-                Manage your wellness
-              </p>
-            </div>
-          </div>
-
-          <button
-            className="w-full py-3 px-4 rounded-xl font-medium transition-all duration-200 hover:scale-[0.98] hover:shadow-lg"
-            style={{
-              backgroundColor: COLORS.primary,
-              color: 'white',
-              fontSize: FONT_SIZES.body
-            }}
-          >
-            Book Consultation
-          </button>
-        </div>
       </div>
     </>
   )
