@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Search, Menu, X, Bell, User } from 'lucide-react'
 import { COLORS, FONT_FAMILY, FONT_SIZES } from '@/lib/constants'
@@ -13,6 +13,9 @@ export default function Navbar({ onSidebarToggle }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [isScrolled, setIsScrolled] = useState<boolean>(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false)
+  const [isAuthenticated] = useState<boolean>(false)
+  const userMenuRef = useRef<HTMLDivElement | null>(null)
 
   // Handle scroll effect for navbar
   useEffect(() => {
@@ -21,6 +24,17 @@ export default function Navbar({ onSidebarToggle }: NavbarProps) {
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close user menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setIsUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -135,12 +149,73 @@ export default function Navbar({ onSidebarToggle }: NavbarProps) {
                 Book Appointment
               </Link>
 
-              <Link
-                href="/login"
-                className="p-2 rounded-full transition-all duration-200 hover:scale-110 border-2 border-white hover:bg-white group"
+              {/* User Menu */}
+              <div
+                className="relative"
+                ref={userMenuRef}
+                onMouseEnter={() => setIsUserMenuOpen(true)}
+                onMouseLeave={() => setIsUserMenuOpen(false)}
               >
-                <User className="h-5 w-5 text-white group-hover:text-gray-900 transition-colors" />
-              </Link>
+                <button
+                  aria-haspopup="menu"
+                  aria-expanded={isUserMenuOpen}
+                  onClick={() => setIsUserMenuOpen((v) => !v)}
+                  className="p-2 rounded-full transition-all duration-200 hover:scale-110 border-2 border-white hover:bg-white group"
+                >
+                  <User className="h-5 w-5 text-white group-hover:text-gray-900 transition-colors" />
+                </button>
+                {isUserMenuOpen && (
+                  <div
+                    role="menu"
+                    aria-label="User menu"
+                    className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg ring-1 ring-black/5 overflow-hidden"
+                    style={{ backgroundColor: '#ffffff' }}
+                  >
+                    <Link
+                      href="/profile"
+                      role="menuitem"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                      style={{ color: COLORS.secondary }}
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      href="/wishlist"
+                      role="menuitem"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                      style={{ color: COLORS.secondary }}
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      Wishlist
+                    </Link>
+                    {isAuthenticated ? (
+                      <button
+                        role="menuitem"
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                        style={{ color: COLORS.danger }}
+                        onClick={() => {
+                          // Placeholder: implement logout
+                          setIsUserMenuOpen(false)
+                          console.log('Logout clicked')
+                        }}
+                      >
+                        Logout
+                      </button>
+                    ) : (
+                      <Link
+                        href="/login"
+                        role="menuitem"
+                        className="block px-4 py-2 text-sm hover:bg-gray-100"
+                        style={{ color: COLORS.primary }}
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Login
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

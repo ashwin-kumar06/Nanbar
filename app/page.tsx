@@ -1,10 +1,10 @@
 // app/page.tsx
 import React from 'react';
-import HeroSection from '@/components/Home/HeroSection';
-import VideoCarousel from '@/components/Home/VideoCarousel';
-import ServicesSection from '@/components/Home/ServicesSection';
-import RepairGuideSection from '@/components/Home/RepairGuideSection';
-import FloatingChatbot from '@/components/Home/FloatingChatbot';
+import HeroSection from '@/app/Home/HeroSection';
+import VideoCarousel from '@/app/Home/VideoCarousel';
+import ServicesSection from '@/app/Home/ServicesSection';
+import RepairGuideSection from '@/app/Home/RepairGuideSection';
+import FloatingChatbot from '@/app/Home/FloatingChatbot';
 
 export default function Home() {
   return (
