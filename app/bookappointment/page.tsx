@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { COLORS } from '@/lib/constants';
 import '@/styles/appointment.css';
+import { Console } from 'node:console';
+import axios from 'axios';
 
 interface Address {
   id: string;
@@ -48,7 +50,7 @@ const ENVIRONMENTS = [
   'Kitchen', 'Bathroom', 'Bedroom', 'Living Room', 'Garage', 'Garden', 'Basement', 'Attic', 'Office', 'Other'
 ];
 
-export default function AppointmentPage() {
+export default function BookAppointmentPage() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     issue: '',
@@ -100,13 +102,38 @@ export default function AppointmentPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const response = await axios.post('http://localhost:5213/Appointment',
+        {
+          appointmentId: crypto.randomUUID(),
+          name: formData.name,
+          issueSummary: formData.issue,
+          environment: formData.environment,
+          urgencyLevel: formData.urgency,
+          serviceType: formData.serviceType,
+          serviceCategory: formData.serviceCategory,
+          detailedDescription: formData.description,
+          serviceAddress: formData.selectedAddress,
+          preferredDate: formData.preferredDate,
+          preferredTime: formData.preferredTime
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+
+      );
+
+      console.log("response: ", response);
+    }
+    catch (error) {
+      console.log(error);
+    }
+    finally {
       setIsSubmitting(false);
-      alert('Appointment booked successfully! You will receive a confirmation shortly.');
-      // Reset form or redirect
-    }, 2000);
+    }
   };
 
   const canProceedToNext = () => {
@@ -133,7 +160,7 @@ export default function AppointmentPage() {
         <p className="appointment-subtitle">
           Get expert help for your home and vehicle needs. Our professionals are ready to assist you.
         </p>
-        
+
         {/* Progress Indicator */}
         <div className="progress-indicator">
           <div className={`progress-step ${currentStep >= 1 ? 'active' : ''}`}>
@@ -156,7 +183,7 @@ export default function AppointmentPage() {
         {currentStep === 1 && (
           <div className="form-step">
             <h2 className="step-title">Basic Information</h2>
-            
+
             <div className="form-group">
               <label className="form-label">Your Name *</label>
               <input
@@ -209,7 +236,7 @@ export default function AppointmentPage() {
                     type="button"
                     className={`urgency-btn ${formData.urgency === value ? 'active' : ''}`}
                     onClick={() => handleInputChange('urgency', value)}
-                    style={{ 
+                    style={{
                       backgroundColor: formData.urgency === value ? color : 'transparent',
                       borderColor: color,
                       color: formData.urgency === value ? 'white' : color
@@ -227,7 +254,7 @@ export default function AppointmentPage() {
         {currentStep === 2 && (
           <div className="form-step">
             <h2 className="step-title">Service Details</h2>
-            
+
             <div className="form-group">
               <label className="form-label">Service Type *</label>
               <div className="service-type-buttons">
@@ -289,7 +316,7 @@ export default function AppointmentPage() {
         {currentStep === 3 && (
           <div className="form-step">
             <h2 className="step-title">Schedule & Address</h2>
-            
+
             <div className="form-group">
               <label className="form-label">Service Address *</label>
               <div className="address-list">
@@ -368,7 +395,7 @@ export default function AppointmentPage() {
               Previous
             </button>
           )}
-          
+
           {currentStep < 3 ? (
             <button
               type="button"
