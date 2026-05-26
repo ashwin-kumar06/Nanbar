@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { COLORS } from '@/lib/constants';
-import '@/styles/appointment.css';
+import '@/styles/bookappointment.css';
 import { Console } from 'node:console';
 import axios from 'axios';
 

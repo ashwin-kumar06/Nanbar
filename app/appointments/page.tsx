@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
 import { COLORS } from '@/lib/constants';
+import '@/styles/appointments.css';
 import '@/styles/community.css';
 import axios from 'axios';
 
@@ -41,20 +42,20 @@ export default function Appointments() {
     };
 
     return (
-        <div className="community-container">
+        <div className="appointments-container">
             {/* Header Section */}
-            <div className="community-header">
+            <div className="appointments-header">
                 <div className="header-content">
-                    <h1 className="community-title">Your Appointments</h1>
-                    <p className="community-subtitle">
+                    <h1 className="appointments-title">Your Appointments</h1>
+                    <p className="appointments-subtitle">
                         You can view and edit your appointments here!
                     </p>
                 </div>
             </div>
 
-            <div className="community-content">
+            <div className="appointments-content">
                 {/* Sidebar */}
-                <div className="community-sidebar">
+                <div className="appointments-sidebar">
                     <div className="sidebar-section">
                         <h3 className="sidebar-title">Categories</h3>
                         <div className="category-filters">
@@ -72,7 +73,7 @@ export default function Appointments() {
                 </div>
 
                 {/* Main Content */}
-                <div className="community-main">
+                <div className="appointments-main">
                     <div className="content-header">
                         <h2 className="content-title">Appointments</h2>
                         <div className="content-filters">

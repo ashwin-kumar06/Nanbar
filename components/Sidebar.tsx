@@ -42,7 +42,7 @@ const menuItems: MenuSection[] = [
       { name: 'Dashboard', href: '/dashboard', icon: Home },
       { name: 'Community', href: '/community', icon: Users },
       { name: 'Store', href: '/store', icon: Store },
-      { name: 'Appointments', href: '/appointment', icon: Calendar },
+      { name: 'Appointments', href: '/appointments', icon: Calendar },
     ]
   },
   {

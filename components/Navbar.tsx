@@ -138,7 +138,7 @@ export default function Navbar({ onSidebarToggle }: NavbarProps) {
               </button>
 
               <Link
-                href="/appointment"
+                href="/bookappointment"
                 className="px-4 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
                 style={{
                   backgroundColor: COLORS.primary,
