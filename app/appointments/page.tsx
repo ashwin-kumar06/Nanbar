@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import { COLORS } from '@/lib/constants';
 import '@/styles/appointments.css';
-import '@/styles/community.css';
 import axios from 'axios';
 
 export default function Appointments() {
@@ -63,6 +62,7 @@ export default function Appointments() {
                                 <button
                                     key={category.name}
                                     className={`category-btn ${category.active ? 'active' : ''}`}
+                                    onClick={() => category.active = true}
                                 >
                                     {category.name}
                                     <span className="category-count">{category.count}</span>
@@ -78,9 +78,8 @@ export default function Appointments() {
                         <h2 className="content-title">Appointments</h2>
                         <div className="content-filters">
                             <select className="filter-select">
-                                <option value="recent">Most Recent</option>
-                                <option value="popular">Most Popular</option>
-                                <option value="helpful">Most Helpful</option>
+                                <option value="recent">Recent</option>
+                                <option value="popular">Older</option>
                             </select>
                         </div>
                     </div>
@@ -88,9 +87,7 @@ export default function Appointments() {
                     <div className="posts-grid">
                         {appointments.map((item) => (
                             <div key={item.appointmentId} className="post-card">
-                                <div className="post-image">
-                                    <div className="post-category">{item.name}</div>
-                                </div>
+                                <div className="appointment-category">{item.name}</div>
 
                                 <div className="post-content">
                                     <h3 className="post-title">{item.serviceType}</h3>
@@ -100,9 +97,9 @@ export default function Appointments() {
 
                                     <div className="post-meta">
                                         <div className="post-stats">
-                                            <span className="difficulty-badge">{item.urgencyLevel}</span>
+                                            <span className="urgency-badge">{item.urgencyLevel}</span>
                                             <span
-                                                className="difficulty-badge"
+                                                className="urgency-badge"
                                                 style={{ backgroundColor: getDifficultyColor(item.urgencyLevel) }}
                                             >
                                                 {item.urgencyLevel}
@@ -116,7 +113,10 @@ export default function Appointments() {
                                     <div className="post-footer">
                                         <div className="post-author">
                                             <span className="author-name">{item.serviceAddress}</span>
-                                            <span className="post-time">{item.timeAgo}</span>
+                                        </div>
+                                        <div className="post-actions">
+                                            <button className="action-btn">Edit</button>
+                                            <button className="action-btn">Cancel</button>
                                         </div>
                                     </div>
                                 </div>
