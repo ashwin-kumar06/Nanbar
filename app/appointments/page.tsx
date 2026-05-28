@@ -46,6 +46,21 @@ export default function Appointments() {
         })))
     };
 
+    const formatPreferredDate = (dateValue?: string) => {
+        if (!dateValue) return "Date not selected";
+
+        const parsed = new Date(dateValue);
+        if (Number.isNaN(parsed.getTime())) {
+            return dateValue;
+        }
+
+        return parsed.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+    };
+
     return (
         <div className="appointments-container">
             {/* Header Section */}
@@ -93,32 +108,33 @@ export default function Appointments() {
                     <div className="posts-grid">
                         {appointments.map((item) => (
                             <div key={item.appointmentId} className="post-card">
-                                <div className="appointment-category">{item.name}</div>
-
                                 <div className="post-content">
-                                    <h3 className="post-title">{item.serviceType}</h3>
-                                    <h3 className="post-title">{item.serviceCategory}</h3>
-                                    <h3 className="post-title">{item.issueSummary}</h3>
+                                    <div className="post-top">
+                                        <span className="appointment-category">{item.serviceCategory || "General Service"}</span>
+                                        <span
+                                            className="urgency-badge"
+                                            style={{ backgroundColor: getDifficultyColor(item.urgencyLevel) }}
+                                        >
+                                            {item.urgencyLevel || "Normal"} Priority
+                                        </span>
+                                    </div>
+
+                                    <h3 className="post-title">{item.issueSummary || "Service Request"}</h3>
+                                    <p className="post-subtitle">{item.serviceType || "Home service"}</p>
                                     <p className="post-description">{item.detailedDescription}</p>
 
                                     <div className="post-meta">
                                         <div className="post-stats">
-                                            <span className="urgency-badge">{item.urgencyLevel}</span>
-                                            <span
-                                                className="urgency-badge"
-                                                style={{ backgroundColor: getDifficultyColor(item.urgencyLevel) }}
-                                            >
-                                                {item.urgencyLevel}
-                                            </span>
-                                            <span className="stat-item">{item.environment}</span>
-                                            <span className="stat-item">{item.preferredDate}</span>
-                                            <span className="stat-item">{item.preferredTime}</span>
+                                            <span className="stat-chip">Environment: {item.environment || "Not specified"}</span>
+                                            <span className="stat-chip">Date: {formatPreferredDate(item.preferredDate)}</span>
+                                            <span className="stat-chip">Time: {item.preferredTime || "Flexible"}</span>
                                         </div>
                                     </div>
 
                                     <div className="post-footer">
                                         <div className="post-author">
-                                            <span className="author-name">{item.serviceAddress}</span>
+                                            <span className="author-label">Service Address</span>
+                                            <span className="author-name">{item.serviceAddress || "Address not provided"}</span>
                                         </div>
                                         <div className="post-actions">
                                             <button className="action-btn">Edit</button>
