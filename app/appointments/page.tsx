@@ -21,7 +21,7 @@ export default function Appointments() {
         }
     };
 
-    const categories = [
+    const [categories, setCategories] = React.useState([
         { name: "All", count: 156, active: true },
         { name: "Plumber", count: 45, active: false },
         { name: "Electrician", count: 32, active: false },
@@ -29,7 +29,7 @@ export default function Appointments() {
         { name: "Painter", count: 24, active: false },
         { name: "HVAC", count: 15, active: false },
         { name: "Mason", count: 12, active: false }
-    ];
+    ]);
 
     const getDifficultyColor = (difficulty: string) => {
         switch (difficulty) {
@@ -38,6 +38,12 @@ export default function Appointments() {
             case 'High': return COLORS.danger;
             default: return COLORS.accent;
         }
+    };
+
+    const handleCategoryClick = (name: string) => {
+        setCategories(prev => prev.map(cat => ({
+            ...cat, active: cat.name === name
+        })))
     };
 
     return (
@@ -62,7 +68,7 @@ export default function Appointments() {
                                 <button
                                     key={category.name}
                                     className={`category-btn ${category.active ? 'active' : ''}`}
-                                    onClick={() => category.active = true}
+                                    onClick={() => handleCategoryClick(category.name)}
                                 >
                                     {category.name}
                                     <span className="category-count">{category.count}</span>
