@@ -22,7 +22,7 @@ interface FormData {
   serviceCategory: string;
   description: string;
   selectedAddress: string;
-  urgency: 'low' | 'medium' | 'high';
+  urgency: 'Low' | 'Medium' | 'High';
   preferredDate: string;
   preferredTime: string;
 }
@@ -59,7 +59,7 @@ export default function BookAppointmentPage() {
     serviceCategory: '',
     description: '',
     selectedAddress: '',
-    urgency: 'medium',
+    urgency: 'Medium',
     preferredDate: '',
     preferredTime: ''
   });
@@ -227,9 +227,9 @@ export default function BookAppointmentPage() {
               <label className="form-label">Urgency Level</label>
               <div className="urgency-buttons">
                 {[
-                  { value: 'low', label: 'Low', color: '#10B981' },
-                  { value: 'medium', label: 'Medium', color: '#F59E0B' },
-                  { value: 'high', label: 'High', color: '#EF4444' }
+                  { value: 'Low', label: 'Low', color: '#10B981' },
+                  { value: 'Medium', label: 'Medium', color: '#F59E0B' },
+                  { value: 'High', label: 'High', color: '#EF4444' }
                 ].map(({ value, label, color }) => (
                   <button
                     key={value}

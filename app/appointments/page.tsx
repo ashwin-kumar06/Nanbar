@@ -6,10 +6,11 @@ import axios from 'axios';
 
 export default function Appointments() {
     const [appointments, setAppointments] = React.useState<any[]>([]);
+    const [isAppointmentDeleted, setIsAppointmentDeleted] = React.useState(false);
 
     useEffect(() => {
         getAppointments();
-    }, [])
+    }, [isAppointmentDeleted])
 
     const getAppointments = async () => {
         try {
@@ -61,6 +62,12 @@ export default function Appointments() {
         });
     };
 
+    const handleAppointmentCancel = (id: string) =>{
+        console.log("id",id);
+        const response = axios.delete(`http://localhost:5213/Appointment/delete?appointmentId=${id}`);
+        setIsAppointmentDeleted(true);
+    }
+
     return (
         <div className="appointments-container">
             {/* Header Section */}
@@ -110,35 +117,36 @@ export default function Appointments() {
                             <div key={item.appointmentId} className="post-card">
                                 <div className="post-content">
                                     <div className="post-top">
-                                        <span className="appointment-category">{item.serviceCategory || "General Service"}</span>
+                                        <span className="appointment-category">{item.serviceCategory}</span>
                                         <span
                                             className="urgency-badge"
                                             style={{ backgroundColor: getDifficultyColor(item.urgencyLevel) }}
                                         >
-                                            {item.urgencyLevel || "Normal"} Priority
+                                            {item.urgencyLevel} Priority
                                         </span>
                                     </div>
 
-                                    <h3 className="post-title">{item.issueSummary || "Service Request"}</h3>
-                                    <p className="post-subtitle">{item.serviceType || "Home service"}</p>
+                                    <h3 className="post-title">{item.issueSummary}</h3>
+                                    <p className="post-subtitle">{item.serviceType}</p>
                                     <p className="post-description">{item.detailedDescription}</p>
 
                                     <div className="post-meta">
                                         <div className="post-stats">
-                                            <span className="stat-chip">Environment: {item.environment || "Not specified"}</span>
+                                            <span className="stat-chip">Environment: {item.environment}</span>
                                             <span className="stat-chip">Date: {formatPreferredDate(item.preferredDate)}</span>
-                                            <span className="stat-chip">Time: {item.preferredTime || "Flexible"}</span>
+                                            <span className="stat-chip">Time: {item.preferredTime}</span>
                                         </div>
                                     </div>
 
                                     <div className="post-footer">
                                         <div className="post-author">
                                             <span className="author-label">Service Address</span>
-                                            <span className="author-name">{item.serviceAddress || "Address not provided"}</span>
+                                            <span className="author-name">{item.name}</span>
+                                            <span className="author-name">{item.serviceAddress}</span>
                                         </div>
                                         <div className="post-actions">
                                             <button className="action-btn">Edit</button>
-                                            <button className="action-btn">Cancel</button>
+                                            <button className="action-btn" onClick={() => handleAppointmentCancel(item.appointmentId)}>Cancel</button>
                                         </div>
                                     </div>
                                 </div>
@@ -149,6 +157,11 @@ export default function Appointments() {
                     <div className="load-more">
                         <button className="btn-secondary">Load More</button>
                     </div>
+                </div>
+
+                {/* Edit modal */}
+                <div>
+                    
                 </div>
             </div>
         </div>
