@@ -1,31 +1,49 @@
 'use client'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import axios from 'axios'
 import { COLORS, FONT_FAMILY, FONT_SIZES } from '@/lib/constants'
 import '@/styles/signup.css'
 
 const OTP_LENGTH = 6
+const API_BASE = 'http://localhost:5213'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [phone, setphone] = useState('')
+  const [name, setName] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showOtpModal, setShowOtpModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [otpDigits, setOtpDigits] = useState<string[]>(() => Array(OTP_LENGTH).fill(''))
   const [otpError, setOtpError] = useState<string | null>(null)
+  const [nameError, setNameError] = useState<string | null>(null)
   const [isVerifying, setIsVerifying] = useState(false)
+  const [isSavingName, setIsSavingName] = useState(false)
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const nameInputRef = useRef<HTMLInputElement | null>(null)
 
   const resetOtp = useCallback(() => {
     setOtpDigits(Array(OTP_LENGTH).fill(''))
     setOtpError(null)
   }, [])
 
-  const closeModal = useCallback(() => {
+  const closeOtpModal = useCallback(() => {
     setShowOtpModal(false)
     resetOtp()
   }, [resetOtp])
+
+  const closeNameModal = useCallback(() => {
+    setShowNameModal(false)
+    setName('')
+    setNameError(null)
+  }, [])
+
+  const redirectHome = useCallback(() => {
+    router.push('/')
+  }, [router])
 
   useEffect(() => {
     if (showOtpModal) {
@@ -33,6 +51,23 @@ export default function LoginPage() {
       return () => window.clearTimeout(t)
     }
   }, [showOtpModal])
+
+  useEffect(() => {
+    if (showNameModal) {
+      const t = window.setTimeout(() => nameInputRef.current?.focus(), 50)
+      return () => window.clearTimeout(t)
+    }
+  }, [showNameModal])
+
+  const checkUserExists = async (phoneNumber: string): Promise<boolean> => {
+    const response = await axios.get(`${API_BASE}/User/exists`, {
+      params: { phone: phoneNumber },
+    })
+    const data = response.data
+    if (typeof data === 'boolean') return data
+    if (typeof data?.exists === 'boolean') return data.exists
+    return Boolean(data)
+  }
 
   const handleGenerateOtp = async () => {
     setError(null)
@@ -45,7 +80,7 @@ export default function LoginPage() {
     try {
       await new Promise((r) => setTimeout(r, 600))
       resetOtp()
-      setShowNameModal(true)
+      setShowOtpModal(true)
     } finally {
       setIsGenerating(false)
     }
@@ -94,12 +129,42 @@ export default function LoginPage() {
     setOtpError(null)
     try {
       await new Promise((r) => setTimeout(r, 700))
-      console.log('OTP verified', { phone: phone.trim(), code })
-      closeModal()
+      const trimmedPhone = phone.trim()
+      const exists = await checkUserExists(trimmedPhone)
+      closeOtpModal()
+      if (exists) {
+        redirectHome()
+      } else {
+        setShowNameModal(true)
+      }
     } catch {
       setOtpError('Verification failed. Try again.')
     } finally {
       setIsVerifying(false)
+    }
+  }
+
+  const handleSaveName = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmedName = name.trim()
+    if (!trimmedName) {
+      setNameError('Please enter your name')
+      return
+    }
+    setIsSavingName(true)
+    setNameError(null)
+    try {
+      await axios.post(
+        `${API_BASE}/User`,
+        { phone: phone.trim(), name: trimmedName },
+        { headers: { 'Content-Type': 'application/json' } },
+      )
+      closeNameModal()
+      redirectHome()
+    } catch {
+      setNameError('Could not save your details. Try again.')
+    } finally {
+      setIsSavingName(false)
     }
   }
 
@@ -145,34 +210,59 @@ export default function LoginPage() {
           className="otp-modal-overlay"
           role="presentation"
           onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal()
+            if (e.target === e.currentTarget) closeNameModal()
           }}
         >
           <div
             className="otp-modal"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="otp-modal-title"
+            aria-labelledby="name-modal-title"
           >
             <div className="otp-modal-header">
-              <h2 id="otp-modal-title" className="otp-modal-title">
-                Enter Name
+              <h2 id="name-modal-title" className="otp-modal-title">
+                Welcome to Nanban
               </h2>
-              <button type="button" className="otp-modal-close" onClick={closeModal} aria-label="Close">
+              <button type="button" className="otp-modal-close" onClick={closeNameModal} aria-label="Close">
                 ×
               </button>
             </div>
+            <p className="otp-modal-hint" style={{ fontSize: FONT_SIZES.small }}>
+              You&apos;re a new user. Please enter your name to continue.
+            </p>
 
-            <form onSubmit={handleVerifyOtp}>
-              <div className="otp-input-row">
-                <input type="text" className="name-input" />
+            <form onSubmit={handleSaveName}>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label htmlFor="name" className="form-label">Full name</label>
+                <input
+                  ref={nameInputRef}
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  className="form-input name-input"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value)
+                    setNameError(null)
+                  }}
+                />
               </div>
+
+              {nameError && (
+                <div className="otp-modal-error" style={{ color: COLORS.danger }}>
+                  {nameError}
+                </div>
+              )}
 
               <button
                 type="submit"
                 className="btn-primary otp-modal-submit"
                 style={{ backgroundColor: COLORS.primary }}
+                disabled={isSavingName}
               >
+                {isSavingName ? 'Saving...' : 'Continue'}
               </button>
             </form>
           </div>
@@ -184,7 +274,7 @@ export default function LoginPage() {
           className="otp-modal-overlay"
           role="presentation"
           onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal()
+            if (e.target === e.currentTarget) closeOtpModal()
           }}
         >
           <div
@@ -197,7 +287,7 @@ export default function LoginPage() {
               <h2 id="otp-modal-title" className="otp-modal-title">
                 Enter OTP
               </h2>
-              <button type="button" className="otp-modal-close" onClick={closeModal} aria-label="Close">
+              <button type="button" className="otp-modal-close" onClick={closeOtpModal} aria-label="Close">
                 ×
               </button>
             </div>
@@ -248,5 +338,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
-

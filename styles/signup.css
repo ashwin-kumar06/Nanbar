@@ -230,6 +230,10 @@
   margin-top: 0.25rem;
 }
 
+.name-input {
+  width: 100%;
+}
+
 @media (max-width: 480px) {
   .otp-digit-input {
     width: 2.35rem;
