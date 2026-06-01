@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showOtpModal, setShowOtpModal] = useState(false)
+  const [showNameModal, setShowNameModal] = useState(false)
   const [otpDigits, setOtpDigits] = useState<string[]>(() => Array(OTP_LENGTH).fill(''))
   const [otpError, setOtpError] = useState<string | null>(null)
   const [isVerifying, setIsVerifying] = useState(false)
@@ -44,7 +45,7 @@ export default function LoginPage() {
     try {
       await new Promise((r) => setTimeout(r, 600))
       resetOtp()
-      setShowOtpModal(true)
+      setShowNameModal(true)
     } finally {
       setIsGenerating(false)
     }
@@ -138,6 +139,45 @@ export default function LoginPage() {
           </button>
         </div>
       </div>
+
+      {showNameModal && (
+        <div
+          className="otp-modal-overlay"
+          role="presentation"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeModal()
+          }}
+        >
+          <div
+            className="otp-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="otp-modal-title"
+          >
+            <div className="otp-modal-header">
+              <h2 id="otp-modal-title" className="otp-modal-title">
+                Enter Name
+              </h2>
+              <button type="button" className="otp-modal-close" onClick={closeModal} aria-label="Close">
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleVerifyOtp}>
+              <div className="otp-input-row">
+                <input type="text" className="name-input" />
+              </div>
+
+              <button
+                type="submit"
+                className="btn-primary otp-modal-submit"
+                style={{ backgroundColor: COLORS.primary }}
+              >
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {showOtpModal && (
         <div
