@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { COLORS, FONT_FAMILY, FONT_SIZES } from '@/lib/constants'
+import Cookies from 'js-cookie'
 import '@/styles/signup.css'
 
 const OTP_LENGTH = 6
@@ -60,9 +61,7 @@ export default function LoginPage() {
   }, [showNameModal])
 
   const checkUserExists = async (phoneNumber: string): Promise<boolean> => {
-    const response = await axios.get(`${API_BASE}/User/exists`, {
-      params: { phone: phoneNumber },
-    })
+    const response = await axios.get(`http://localhost:5213/Auth/UserExist?mobile=${phoneNumber}`)
     const data = response.data
     if (typeof data === 'boolean') return data
     if (typeof data?.exists === 'boolean') return data.exists
@@ -105,19 +104,6 @@ export default function LoginPage() {
     }
   }
 
-  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault()
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH)
-    if (!pasted) return
-    const next = Array(OTP_LENGTH)
-      .fill('')
-      .map((_, i) => pasted[i] ?? '')
-    setOtpDigits(next)
-    setOtpError(null)
-    const focusIndex = Math.min(pasted.length, OTP_LENGTH - 1)
-    otpInputRefs.current[focusIndex]?.focus()
-  }
-
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     const code = otpDigits.join('')
@@ -137,6 +123,8 @@ export default function LoginPage() {
       } else {
         setShowNameModal(true)
       }
+      handleGetUser();
+      
     } catch {
       setOtpError('Verification failed. Try again.')
     } finally {
@@ -144,7 +132,7 @@ export default function LoginPage() {
     }
   }
 
-  const handleSaveName = async (e: React.FormEvent) => {
+  const handleSaveUser = async (e: React.FormEvent) => {
     e.preventDefault()
     const trimmedName = name.trim()
     if (!trimmedName) {
@@ -153,11 +141,13 @@ export default function LoginPage() {
     }
     setIsSavingName(true)
     setNameError(null)
+    console.log("phone",phone)
     try {
-      await axios.post(
-        `${API_BASE}/User`,
-        { phone: phone.trim(), name: trimmedName },
-        { headers: { 'Content-Type': 'application/json' } },
+      await axios.post(`http://localhost:5213/Auth/AddUser`,
+        { 
+          name: trimmedName,
+          mobile: phone
+        }
       )
       closeNameModal()
       redirectHome()
@@ -165,6 +155,17 @@ export default function LoginPage() {
       setNameError('Could not save your details. Try again.')
     } finally {
       setIsSavingName(false)
+    }
+  }
+
+  const handleGetUser = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5213/Auth/User/${phone}`)
+      
+      Cookies.set('UserData',response.data)
+      console.log("Response: ", Cookies.get('UserData'))
+    } catch {
+      setNameError('Could not get your details. Try again.')
     }
   }
 
@@ -231,7 +232,7 @@ export default function LoginPage() {
               You&apos;re a new user. Please enter your name to continue.
             </p>
 
-            <form onSubmit={handleSaveName}>
+            <form onSubmit={handleSaveUser}>
               <div className="form-group" style={{ marginBottom: '1rem' }}>
                 <label htmlFor="name" className="form-label">Full name</label>
                 <input
@@ -311,7 +312,6 @@ export default function LoginPage() {
                     value={d}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    onPaste={i === 0 ? handleOtpPaste : undefined}
                     aria-label={`Digit ${i + 1}`}
                   />
                 ))}

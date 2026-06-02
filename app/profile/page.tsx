@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import { COLORS } from '@/lib/constants';
+import Cookies from 'js-cookie';
 import '@/styles/profile.css';
 
 interface Address {
@@ -47,10 +48,13 @@ const EMPTY_ADDRESS_FORM = {
 };
 
 export default function ProfilePage() {
+  const data = Cookies.get('UserData');
+  console.log("data: ", data)
+
   const [profile, setProfile] = useState<ProfileData>({
-    fullName: 'Ashwin Kumar',
-    phone: '+91 98765 43210',
-    email: 'ashwin@example.com',
+    fullName: data.name,
+    phone: data.mobile,
+    email: data.email,
     memberSince: 'January 2025',
     preferredServices: ['Plumber', 'Electrician', 'Vehicle Mechanic'],
   });
