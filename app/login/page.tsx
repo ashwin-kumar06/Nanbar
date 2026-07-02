@@ -6,9 +6,10 @@ import axios from 'axios'
 import { COLORS, FONT_FAMILY, FONT_SIZES } from '@/lib/constants'
 import Cookies from 'js-cookie'
 import '@/styles/signup.css'
+import { useAppDispatch } from '@/lib/redux/hooks'
+import { setUser } from '@/lib/redux/features/user/userSlice'
 
 const OTP_LENGTH = 6
-const API_BASE = 'http://localhost:5213'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -25,6 +26,7 @@ export default function LoginPage() {
   const [isSavingName, setIsSavingName] = useState(false)
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
   const nameInputRef = useRef<HTMLInputElement | null>(null)
+  const dispatch = useAppDispatch()
 
   const resetOtp = useCallback(() => {
     setOtpDigits(Array(OTP_LENGTH).fill(''))
@@ -61,7 +63,7 @@ export default function LoginPage() {
   }, [showNameModal])
 
   const checkUserExists = async (phoneNumber: string): Promise<boolean> => {
-    const response = await axios.get(`http://localhost:5213/Auth/UserExist?mobile=${phoneNumber}`)
+    const response = await axios.get(`http://localhost:8080/user/exist/${phoneNumber}`)
     const data = response.data
     if (typeof data === 'boolean') return data
     if (typeof data?.exists === 'boolean') return data.exists
@@ -117,6 +119,7 @@ export default function LoginPage() {
       await new Promise((r) => setTimeout(r, 700))
       const trimmedPhone = phone.trim()
       const exists = await checkUserExists(trimmedPhone)
+      console.log("Exists: ", exists)
       closeOtpModal()
       if (exists) {
         redirectHome()
@@ -124,7 +127,7 @@ export default function LoginPage() {
         setShowNameModal(true)
       }
       handleGetUser();
-      
+
     } catch {
       setOtpError('Verification failed. Try again.')
     } finally {
@@ -141,15 +144,16 @@ export default function LoginPage() {
     }
     setIsSavingName(true)
     setNameError(null)
-    console.log("phone",phone)
+    console.log("phone", phone)
     try {
-      await axios.post(`http://localhost:5213/Auth/AddUser`,
-        { 
+      await axios.post(`http://localhost:8080/user/create`,
+        {
           name: trimmedName,
           mobile: phone
         }
       )
       closeNameModal()
+      handleGetUser();
       redirectHome()
     } catch {
       setNameError('Could not save your details. Try again.')
@@ -160,10 +164,18 @@ export default function LoginPage() {
 
   const handleGetUser = async () => {
     try {
-      const response = await axios.get(`http://localhost:5213/Auth/User/${phone}`)
-      
-      Cookies.set('UserData',response.data)
-      console.log("Response: ", Cookies.get('UserData'))
+      const response = await axios.get(`http://localhost:8080/user/get/mobile/${phone}`)
+
+      dispatch(
+        setUser({
+          id: response.data.id,
+          name: response.data.name,
+          mobile: response.data.mobile,
+          email: response.data.email,
+          addedOn: response.data.addedOn,
+        })
+      );
+      console.log("Response: ", response.data)
     } catch {
       setNameError('Could not get your details. Try again.')
     }

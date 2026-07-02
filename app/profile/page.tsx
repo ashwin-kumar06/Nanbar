@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   User,
@@ -17,6 +17,7 @@ import {
 import { COLORS } from '@/lib/constants';
 import Cookies from 'js-cookie';
 import '@/styles/profile.css';
+import { useAppSelector } from '@/lib/redux/hooks'
 
 interface Address {
   id: string;
@@ -48,15 +49,17 @@ const EMPTY_ADDRESS_FORM = {
 };
 
 export default function ProfilePage() {
-  const data = Cookies.get('UserData');
-  console.log("data: ", data)
+
+  const userData = useAppSelector(
+    (state) => state.user.user
+  )
 
   const [profile, setProfile] = useState<ProfileData>({
-    fullName: data.name,
-    phone: data.mobile,
-    email: data.email,
-    memberSince: 'January 2025',
-    preferredServices: ['Plumber', 'Electrician', 'Vehicle Mechanic'],
+    fullName: '',
+    phone: '',
+    email: '',
+    memberSince: '',
+    preferredServices: [],
   });
 
   const [addresses, setAddresses] = useState<Address[]>([
@@ -92,6 +95,27 @@ export default function ProfilePage() {
 
   const appointmentCount = 4;
   const communityPosts = 2;
+
+  useEffect(() => {
+    console.log("User: ", userData)
+
+    if (userData) {
+      setProfile((prev) => ({
+        ...prev,
+        fullName: userData?.name ?? '',
+        phone: userData?.mobile ?? '',
+        email: userData?.email ?? '',
+        memberSince:
+          userData?.addedOn
+            ? new Date(userData.addedOn).toLocaleDateString('en-IN', {
+              month: 'long',
+              year: 'numeric',
+            })
+            : '',
+      }));
+
+    }
+  }, [])
 
   const openAddAddressModal = () => {
     setEditingAddressId(null);
