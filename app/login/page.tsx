@@ -168,7 +168,7 @@ export default function LoginPage() {
 
       dispatch(
         setUser({
-          id: response.data.id,
+          id: response.data.userId,
           name: response.data.name,
           mobile: response.data.mobile,
           email: response.data.email,

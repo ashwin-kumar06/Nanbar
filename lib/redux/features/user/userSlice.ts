@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { UUID } from 'crypto'
 
 interface User {
-  id: number
+  id: string
   name: string
   mobile: string
   email: string

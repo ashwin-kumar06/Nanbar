@@ -18,12 +18,13 @@ import { COLORS } from '@/lib/constants';
 import Cookies from 'js-cookie';
 import '@/styles/profile.css';
 import { useAppSelector } from '@/lib/redux/hooks'
+import axios from 'axios';
 
 interface Address {
-  id: string;
+  addressId: string;
   label: string;
   name: string;
-  phone: string;
+  mobile: string;
   addressLine: string;
   city: string;
   pincode: string;
@@ -32,7 +33,7 @@ interface Address {
 
 interface ProfileData {
   fullName: string;
-  phone: string;
+  mobile: string;
   email: string;
   memberSince: string;
   preferredServices: string[];
@@ -41,7 +42,7 @@ interface ProfileData {
 const EMPTY_ADDRESS_FORM = {
   label: 'Home',
   name: '',
-  phone: '',
+  mobile: '',
   addressLine: '',
   city: '',
   pincode: '',
@@ -56,34 +57,13 @@ export default function ProfilePage() {
 
   const [profile, setProfile] = useState<ProfileData>({
     fullName: '',
-    phone: '',
+    mobile: '',
     email: '',
     memberSince: '',
     preferredServices: [],
   });
 
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: '1',
-      label: 'Home',
-      name: 'Ashwin Kumar',
-      phone: '+91 98765 43210',
-      addressLine: '123 Main Street, Koramangala',
-      city: 'Bengaluru',
-      pincode: '560034',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      label: 'Office',
-      name: 'Ashwin Kumar',
-      phone: '+91 98765 43210',
-      addressLine: '45 Tech Park Road, Phase 2',
-      city: 'Bengaluru',
-      pincode: '560100',
-      isDefault: false,
-    },
-  ]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileDraft, setProfileDraft] = useState(profile);
@@ -103,7 +83,7 @@ export default function ProfilePage() {
       setProfile((prev) => ({
         ...prev,
         fullName: userData?.name ?? '',
-        phone: userData?.mobile ?? '',
+        mobile: userData?.mobile ?? '',
         email: userData?.email ?? '',
         memberSince:
           userData?.addedOn
@@ -117,23 +97,44 @@ export default function ProfilePage() {
     }
   }, [])
 
+
+  useEffect(() => {
+    if (userData?.id) {
+      getAddresses();
+    }
+  }, [isAddressModalOpen]);
+
+
+  const getAddresses = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/address/getByUserId/${userData?.id}`);
+      const data = await response.data;
+
+      setAddresses(data);
+
+      console.log("Add", data)
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
   const openAddAddressModal = () => {
     setEditingAddressId(null);
     setAddressForm({
       ...EMPTY_ADDRESS_FORM,
       name: profile.fullName,
-      phone: profile.phone,
+      mobile: profile.mobile,
       setAsDefault: addresses.length === 0,
     });
     setIsAddressModalOpen(true);
   };
 
   const openEditAddressModal = (address: Address) => {
-    setEditingAddressId(address.id);
+    setEditingAddressId(address.addressId);
     setAddressForm({
       label: address.label,
       name: address.name,
-      phone: address.phone,
+      mobile: address.mobile,
       addressLine: address.addressLine,
       city: address.city,
       pincode: address.pincode,
@@ -168,13 +169,14 @@ export default function ProfilePage() {
 
   const handleSetDefault = (id: string) => {
     setAddresses((prev) =>
-      prev.map((addr) => ({ ...addr, isDefault: addr.id === id }))
+      prev.map((addr) => ({ ...addr, isDefault: addr.addressId === id }))
     );
   };
 
-  const handleDeleteAddress = (id: string) => {
+  const handleDeleteAddress = async (id: string) => {
+    await axios.delete(`http://localhost:8080/address/delete/${id}`);
     setAddresses((prev) => {
-      const filtered = prev.filter((a) => a.id !== id);
+      const filtered = prev.filter((a) => a.addressId !== id);
       if (filtered.length > 0 && !filtered.some((a) => a.isDefault)) {
         filtered[0] = { ...filtered[0], isDefault: true };
       }
@@ -182,53 +184,27 @@ export default function ProfilePage() {
     });
   };
 
-  const handleAddressSubmit = (e: React.FormEvent) => {
+  const handleAddressSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const trimmed = {
+      userId : userData?.id,
       label: addressForm.label.trim() || 'Home',
       name: addressForm.name.trim(),
-      phone: addressForm.phone.trim(),
+      mobile: addressForm.mobile.trim(),
       addressLine: addressForm.addressLine.trim(),
       city: addressForm.city.trim(),
       pincode: addressForm.pincode.trim(),
+      isDefault: addressForm.setAsDefault
     };
 
-    if (!trimmed.name || !trimmed.phone || !trimmed.addressLine || !trimmed.city) {
+    console.log("add address", trimmed.name, trimmed.mobile, trimmed.addressLine, trimmed.city)
+
+    if (!trimmed.name || !trimmed.mobile || !trimmed.addressLine || !trimmed.city) {
       return;
     }
 
-    if (editingAddressId) {
-      setAddresses((prev) =>
-        prev.map((addr) => {
-          if (addr.id !== editingAddressId) {
-            return addressForm.setAsDefault
-              ? { ...addr, isDefault: false }
-              : addr;
-          }
-          return {
-            ...addr,
-            ...trimmed,
-            isDefault: addressForm.setAsDefault,
-          };
-        })
-      );
-    } else {
-      const newId = String(Date.now());
-      setAddresses((prev) => {
-        const next = addressForm.setAsDefault
-          ? prev.map((a) => ({ ...a, isDefault: false }))
-          : [...prev];
-        return [
-          ...next,
-          {
-            id: newId,
-            ...trimmed,
-            isDefault: addressForm.setAsDefault || prev.length === 0,
-          },
-        ];
-      });
-    }
+    await axios.post(`http://localhost:8080/address/create`,trimmed);
 
     closeAddressModal();
   };
@@ -328,15 +304,15 @@ export default function ProfilePage() {
                 {isEditingProfile ? (
                   <input
                     className="profile-field-input"
-                    value={profileDraft.phone}
+                    value={profileDraft.mobile}
                     onChange={(e) =>
-                      setProfileDraft((p) => ({ ...p, phone: e.target.value }))
+                      setProfileDraft((p) => ({ ...p, mobile: e.target.value }))
                     }
                   />
                 ) : (
                   <span className="profile-field-value">
                     <Phone size={18} style={{ color: COLORS.primary }} />
-                    {profile.phone}
+                    {profile.mobile}
                   </span>
                 )}
               </div>
@@ -420,7 +396,7 @@ export default function ProfilePage() {
               <div className="address-list">
                 {addresses.map((addr) => (
                   <article
-                    key={addr.id}
+                    key={addr.addressId}
                     className={`address-card ${addr.isDefault ? 'is-default' : ''}`}
                   >
                     <div className="address-card-header">
@@ -441,7 +417,7 @@ export default function ProfilePage() {
                           <button
                             type="button"
                             className="btn-ghost"
-                            onClick={() => handleSetDefault(addr.id)}
+                            onClick={() => handleSetDefault(addr.addressId)}
                             aria-label={`Set ${addr.label} as default`}
                           >
                             <Star size={14} />
@@ -451,7 +427,7 @@ export default function ProfilePage() {
                         <button
                           type="button"
                           className="btn-ghost danger"
-                          onClick={() => handleDeleteAddress(addr.id)}
+                          onClick={() => handleDeleteAddress(addr.addressId)}
                           aria-label={`Remove ${addr.label} address`}
                         >
                           <Trash2 size={14} />
@@ -461,7 +437,7 @@ export default function ProfilePage() {
                     <div className="address-details">
                       <p className="address-contact-name">{addr.name}</p>
                       <p>{formatFullAddress(addr)}</p>
-                      <p className="address-phone">{addr.phone}</p>
+                      <p className="address-mobile">{addr.mobile}</p>
                     </div>
                   </article>
                 ))}
@@ -522,16 +498,16 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="profile-form-group">
-                  <label className="profile-form-label" htmlFor="addr-phone">
+                  <label className="profile-form-label" htmlFor="addr-mobile">
                     Phone *
                   </label>
                   <input
-                    id="addr-phone"
+                    id="addr-mobile"
                     className="profile-field-input"
                     required
-                    value={addressForm.phone}
+                    value={addressForm.mobile}
                     onChange={(e) =>
-                      setAddressForm((f) => ({ ...f, phone: e.target.value }))
+                      setAddressForm((f) => ({ ...f, mobile: e.target.value }))
                     }
                   />
                 </div>
